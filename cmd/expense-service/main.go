@@ -11,12 +11,12 @@ import (
 
 func main() {
 	// Initialize database connection
-	if err := db.ConnectDatabase(); err != nil {
+	if _,err := db.ConnectDatabase(); err != nil {
 		log.Fatalf("Database connection error: %v", err)
 	}
 
 	// Seed default categories
-	if err := db.SeedDefaultCategories(db); err != nil {
+	if err := db.SeedDefaultCategories(db.DB); err != nil {
 		log.Fatalf("Failed to seed default categories: %v", err)
 	}
 
@@ -25,7 +25,8 @@ func main() {
 
 	// Register routes
 	routes.CategoryRoutes(server) // Public routes
-
+  routes.ExpenseRoutes(server)
+  routes.BudgetRoutes(server)
 	// Check for environment variable port
 	port := os.Getenv("PORT")
 	if port == "" {

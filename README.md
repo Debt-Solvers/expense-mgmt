@@ -93,6 +93,36 @@ docker run -p 8081:8081 expense-service
 
 ### Budgets
 
+POST /api/v1/budgets
+Description: Creates a new budget for the user.
+<code>{
+"category_id": "d951a6bc-b346-4131-b294-fe7b33edcd59", // UUID, required, category for which the budget is set
+"amount": 500.00, // float, required, budget amount
+"start_date": "2024-12-01", // string, required, the start date in YYYY-MM-DD format
+"end_date": "2024-12-31" // string, required, the end date in YYYY-MM-DD format
+}
+</code>
+<code>
+{
+"status": "success",
+"message": "Budget created successfully",
+"data": {
+"budget_id": "uuid", // The generated budget ID
+"user_id": "uuid", // User's ID
+"category_id": "uuid", // Associated category ID
+"amount": 500.00, // Budget amount
+"start_date": "2024-12-01", // Budget start date
+"end_date": "2024-12-31" // Budget end date
+}
+}
+
+{
+"status": "error",
+"message": "Invalid input: {error_message}"
+}
+
+</code>
+
 ### Receipts
 
 ## Environment Varibles

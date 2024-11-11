@@ -13,7 +13,7 @@ import (
 var DB *gorm.DB
 
 // ConnectDatabase initializes a connection to the PostgreSQL database
-func ConnectDatabase() error {
+func ConnectDatabase() (*gorm.DB, error) {
 	config := configs.LoadConfig() // Load the configuration
 
 	// Build the connection string
@@ -29,11 +29,11 @@ func ConnectDatabase() error {
 	var err error
 	DB, err = gorm.Open(postgres.Open(dbURI), &gorm.Config{})
 	if err != nil {
-		return fmt.Errorf("failed to initialize database: %w", err)
+		return nil, fmt.Errorf("failed to initialize database: %w", err)
 	}
 
 	log.Println("Database connected successfully")
-	return nil // Return nil error if successful
+	return DB,nil // Return nil error if successful
 }
 
 // GetDBInstance returns the DB instance
