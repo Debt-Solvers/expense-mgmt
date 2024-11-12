@@ -79,11 +79,9 @@ func ListBudgets(c *gin.Context) {
 	}
 
 	// Retrieve query parameters
-	period := c.DefaultQuery("period", "current")
 	categoryID := c.DefaultQuery("category_id", "")
 	startDate := c.DefaultQuery("start_date", "")
 	endDate := c.DefaultQuery("end_date", "")
-	status := c.DefaultQuery("status", "active")
 
 	// Build the query
 	var budgets []models.Budget
@@ -99,26 +97,6 @@ func ListBudgets(c *gin.Context) {
 	if endDate != "" {
 		query = query.Where("end_date <= ?", endDate)
 	}
-	if status != "" {
-		query = query.Where("status = ?", status)
-	}
-
-	// Apply period filter based on current, upcoming, or past
-	switch period {
-	case "current":
-		// Example: Retrieve budgets that are ongoing (start_date <= current and end_date >= current)
-		query = query.Where("start_date <= ? AND end_date >= ?", time.Now(), time.Now())
-	case "upcoming":
-		// Example: Retrieve budgets that are yet to start (start_date > current)
-		query = query.Where("start_date > ?", time.Now())
-	case "past":
-		// Example: Retrieve budgets that have already ended (end_date < current)
-		query = query.Where("end_date < ?", time.Now())
-	default:
-		// If the period doesn't match any of the predefined cases, treat it as an invalid request
-		utils.SendResponse(c, http.StatusBadRequest, "Invalid period value", nil, nil)
-		return
-	}
 
 	// Execute the query
 	if err := query.Find(&budgets).Error; err != nil {
@@ -128,6 +106,7 @@ func ListBudgets(c *gin.Context) {
 
 	utils.SendResponse(c, http.StatusOK, "Budgets fetched successfully", budgets, nil)
 }
+
 
 // GetSingleBudget fetches detailed information about a specific budget
 func GetSingleBudget(c *gin.Context) {
@@ -257,6 +236,7 @@ func BudgetAnalysis(c *gin.Context) {
 	// Fetch budgets and expenses within the specified period
 	var budgets []models.Budget
 	query := db.GetDBInstance().Where("user_id = ?", userID)
+
 	if categoryID != "" {
 		query = query.Where("category_id = ?", categoryID)
 	}

@@ -89,40 +89,130 @@ docker run -p 8081:8081 expense-service
 
 ### Categories
 
-### Expenses
+## Expenses
 
-### Budgets
+### Creating an expense (POST /api/v1/expenses)
 
-POST /api/v1/budgets
-Description: Creates a new budget for the user.
-<code>{
-"category_id": "d951a6bc-b346-4131-b294-fe7b33edcd59", // UUID, required, category for which the budget is set
-"amount": 500.00, // float, required, budget amount
-"start_date": "2024-12-01", // string, required, the start date in YYYY-MM-DD format
-"end_date": "2024-12-31" // string, required, the end date in YYYY-MM-DD format
-}
+### Listing expenses (GET /api/v1/expenses)
+
+### Getting a single expense (GET /api/v1/expenses/{expenseId})
+
+### Updating an expense (PUT /api/v1/expenses/{expenseId})
+
+### Deleting an expense (DELETE /api/v1/expenses/{expenseId})
+
+### Expense Analysis (GET /api/v1/expenses/analysis)
+
+<p>This endpoint is more focused on aggregating and analyzing the data. It’s about providing insights based on the expenses. For example:</p></br>
+
+<p>Total spending in a specific period (e.g., month, week).
+  Expenditure by category or across time periods.
+  Patterns in spending to help the user understand their spending habits.
+  The Expense Analysis could use aggregate data, providing a summary or high-level view, rather than individual records, which is what CRUD operations focus on.
+</p>
+
+## Budgets
+
+### POST /api/v1/budgets
+
+<p>Description: Creates a new budget for the user.</p>
+
+<p>
+  <code>
+    {
+    "category_id": "d951a6bc-b346-4131-b294-fe7b33edcd59", // UUID, required, category for which the budget is set
+    "amount": 500.00, // float, required, budget amount
+    "start_date": "2024-12-01", // string, required, the start date in YYYY-MM-DD format
+    "end_date": "2024-12-31" // string, required, the end date in YYYY-MM-DD format
+    }
+  </code>
+</p>
+
+<p>
+  <code>
+    {
+      "status": "success",
+      "message": "Budget created successfully",
+        "data": {
+        "budget_id": "uuid", // The generated budget ID
+        "user_id": "uuid", // User's ID
+        "category_id": "uuid", // Associated category ID
+        "amount": 500.00, // Budget amount
+        "start_date": "2024-12-01", // Budget start date
+        "end_date": "2024-12-31" // Budget end date
+      }
+    }
+
+    {
+    "status": "error",
+    "message": "Invalid input: {error_message}"
+    }
+
 </code>
-<code>
+</p>
+
+<p> 
+  Endpoint: GET /api/v1/budgets
+
+Endpoint: GET /api/v1/budgets/{budgetId}
+
+This endpoint retrieves a specific budget by its ID.
+
+JSON Query Parameters:
+None
+
+</p>
+<p>  
+  Get All Budgets (List Budgets)
+  Endpoint: GET /api/v1/budgets
+
+This endpoint will allow you to list all budgets, with optional query parameters for filtering.
+
+JSON Query Parameters:
+period: current, upcoming, past
+category_id: Filter budgets by category
+start_date: Filter budgets starting from this date
+end_date: Filter budgets ending before this date
+status: active, exceeded, upcoming
+
+</p>
+<p>
+  Update Budget
+  Endpoint: PUT /api/v1/budgets/{budgetId}
+
+This endpoint will update an existing budget's amount, category, or date range.
 {
-"status": "success",
-"message": "Budget created successfully",
-"data": {
-"budget_id": "uuid", // The generated budget ID
-"user_id": "uuid", // User's ID
-"category_id": "uuid", // Associated category ID
-"amount": 500.00, // Budget amount
-"start_date": "2024-12-01", // Budget start date
-"end_date": "2024-12-31" // Budget end date
-}
+"amount": 600.00,
+"start_date": "2024-12-05",
+"end_date": "2024-12-31",
+"category_id": "a2f3b6c7-d567-492f-a8f7-b7c3b9d7e1d4"
 }
 
-{
-"status": "error",
-"message": "Invalid input: {error_message}"
-}
+  </p>
 
-</code>
+  <p> 
+    Delete Budget
+    Endpoint: DELETE /api/v1/budgets/{budgetId}
 
+    This endpoint will remove a specific budget.
+
+    JSON Body:
+    None
+
+  </p>
+
+  <p>
+    Budget Analysis (GET /api/v1/budgets/analysis)
+    Request:
+    Method: GET
+    URL: /api/v1/budgets/analysis
+    Query Parameters:
+    category_id: d951a6bc-b346-4131-b294-fe7b33edcd59 (optional)
+    start_date: 2024-12-01 (optional)
+    end_date: 2024-12-31 (optional)
+
+  </p>
+  
 ### Receipts
 
 ## Environment Varibles

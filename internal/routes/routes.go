@@ -44,6 +44,6 @@ func BudgetRoutes(router *gin.Engine) {
 		budgetGroup.GET("/:budgetId", controller.GetSingleBudget)  // Get a single budget
 		budgetGroup.PUT("/:budgetId", controller.UpdateBudget)     // Update a budget
 		budgetGroup.DELETE("/:budgetId", controller.DeleteBudget)  // Delete a budget
-		budgetGroup.GET("/budgets/analysis", controller.BudgetAnalysis)
+		budgetGroup.GET("/budget/analysis", controller.BudgetAnalysis)
 	}
 }
