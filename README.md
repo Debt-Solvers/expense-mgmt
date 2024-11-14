@@ -87,7 +87,90 @@ docker run -p 8081:8081 expense-service
 
 ## API Endpoints
 
-### Categories
+## Categories
+
+<h5>Get Default Categories</h5>
+<p>
+  <em>Endpoint</em>:GET /api/v1/categories/defaults </br>
+  <em>Query Parameters</em>:None </br>
+  <em>Response</em>: </br>
+  <code>
+    {
+    "status": 200,
+    "message": "Fetched default categories successfully",
+    "data": {
+        "categories": [
+            {
+              "category_id": "74e21b0b-8ad8-49a1-8a01-7e74e250e713",
+              "name": "Food & Dining",
+              "description": "Restaurants, groceries, and food delivery",
+              "color_code": "#FFD700",
+              "is_default": true,
+              "created_at": "2024-11-12T19:06:54.155524-05:00",
+              "updated_at": "2024-11-12T19:06:54.155524-05:00",
+              "deleted_at": null
+            }
+        ]
+      }
+    }
+  </code>
+</p>
+
+<h5>Get Single Category Details</h5>
+<p>
+  <em>Endpoint</em>:GET /api/v1/categories/{categoryId} </br>
+  <em>Query Parameters</em>:None </br>
+  <em>Response</em>: </br>
+  <code>
+    {
+      "status": 200,
+      "message": "Category details fetched successfully",
+      "data": {
+          "category_id": "153789c9-3d4f-4b65-b25f-be065ecf028b",
+          "name": "Others",
+          "description": "Miscellaneous expenses",
+          "color_code": "#A9A9A9",
+          "is_default": true,
+          "created_at": "2024-11-12T19:06:54.209896-05:00",
+          "updated_at": "2024-11-12T19:06:54.209896-05:00",
+          "deleted_at": null
+      }
+    }
+  </br>
+    {
+      "status": 404,
+      "message": "Category not found"
+    }
+  </code>
+</p>
+
+<h5>Update Category</h5>
+<p>
+  <em>Endpoint</em>:PUT /api/v1/categories/{categoryId} </br>
+  <em>Query Parameters</em>:None </br>
+  <em>Response</em>: </br>
+  <code>
+    {
+      "status": 200,
+      "message": "Category details fetched successfully",
+      "data": {
+          "category_id": "153789c9-3d4f-4b65-b25f-be065ecf028b",
+          "name": "Others",
+          "description": "Miscellaneous expenses",
+          "color_code": "#A9A9A9",
+          "is_default": true,
+          "created_at": "2024-11-12T19:06:54.209896-05:00",
+          "updated_at": "2024-11-12T19:06:54.209896-05:00",
+          "deleted_at": null
+      }
+    }
+  </br>
+    {
+      "status": 404,
+      "message": "Category not found"
+    }
+  </code>
+</p>
 
 ## Expenses
 
@@ -142,13 +225,13 @@ docker run -p 8081:8081 expense-service
         "end_date": "2024-12-31" // Budget end date
       }
     }
-
+  </code>
+  <code>
     {
     "status": "error",
     "message": "Invalid input: {error_message}"
     }
-
-</code>
+  </code>
 </p>
 
 <p> 
