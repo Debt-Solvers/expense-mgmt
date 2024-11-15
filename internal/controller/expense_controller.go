@@ -13,7 +13,57 @@ import (
 	"gorm.io/gorm"
 )
 
-// CreateExpense creates a new expense record
+// // CreateExpense creates a new expense record
+// func CreateExpense(c *gin.Context) {
+// 	// Get the DB instance
+// 	DB := db.GetDBInstance()
+
+// 	// Get the user ID from the JWT token in the middleware (assumed to be set)
+// 	userID, exists := c.Get("userId")
+// 	if !exists {
+// 		utils.SendResponse(c, http.StatusUnauthorized, "User not authorized", nil, nil)
+// 		return
+// 	}
+
+// 	var expense models.Expense
+// 	// Bind the incoming JSON payload to the Expense model
+// 	if err := c.ShouldBindJSON(&expense); err != nil {
+// 		utils.SendResponse(c, http.StatusBadRequest, "Invalid input", nil, nil)
+// 		return
+// 	}
+
+// 	// Validate input
+// 	if expense.Amount <= 0 {
+// 		utils.SendResponse(c, http.StatusBadRequest, "Amount must be positive", nil, nil)
+// 		return
+// 	}
+
+// 	if expense.Date.After(time.Now()) {
+// 		utils.SendResponse(c, http.StatusBadRequest, "Date cannot be in the future", nil, nil)
+// 		return
+// 	}
+
+// 	// Set the user_id
+// 	expense.UserID = userID.(uuid.UUID)
+
+// 	// Fetch category by category_id to ensure it exists
+// 	var category models.Category
+// 	if err := DB.First(&category, "id = ?", expense.CategoryID).Error; err != nil {
+//     utils.SendResponse(c, http.StatusBadRequest, "Invalid category ID", nil, nil)
+//     return
+// 	}
+
+// 	// Save the expense to the database
+// 	if err := DB.Create(&expense).Error; err != nil {
+// 		utils.SendResponse(c, http.StatusInternalServerError, "Error saving expense", nil, nil)
+// 		return
+// 	}
+
+// 	// Respond with the created expense
+// 	utils.SendResponse(c, http.StatusOK, "Expense created successfully", expense, nil)
+// }
+
+// CreateExpense creates a new expense record with detailed error handling
 func CreateExpense(c *gin.Context) {
 	// Get the DB instance
 	DB := db.GetDBInstance()
@@ -21,20 +71,21 @@ func CreateExpense(c *gin.Context) {
 	// Get the user ID from the JWT token in the middleware (assumed to be set)
 	userID, exists := c.Get("userId")
 	if !exists {
-		utils.SendResponse(c, http.StatusUnauthorized, "User not authorized", nil, nil)
+		utils.SendResponse(c, http.StatusUnauthorized, "User not authorized", nil,nil)
 		return
 	}
 
 	var expense models.Expense
 	// Bind the incoming JSON payload to the Expense model
 	if err := c.ShouldBindJSON(&expense); err != nil {
-		utils.SendResponse(c, http.StatusBadRequest, "Invalid input", nil, nil)
+		// If binding fails, provide details on which fields are incorrect
+		utils.SendResponse(c, http.StatusBadRequest, "Invalid input: Check JSON format and fields", nil, err.Error())
 		return
 	}
 
-	// Validate input
+	// Validate fields individually and provide specific error messages
 	if expense.Amount <= 0 {
-		utils.SendResponse(c, http.StatusBadRequest, "Amount must be positive", nil, nil)
+		utils.SendResponse(c, http.StatusBadRequest, "Amount must be a positive number", nil, nil)
 		return
 	}
 
@@ -43,19 +94,20 @@ func CreateExpense(c *gin.Context) {
 		return
 	}
 
+	// Validate CategoryID by checking if it exists in the database
+	var category models.Category
+	if err := DB.First(&category, "id = ?", expense.CategoryID).Error; err != nil {
+		utils.SendResponse(c, http.StatusBadRequest, "Invalid category ID", nil, err.Error())
+		return
+	}
+
 	// Set the user_id
 	expense.UserID = userID.(uuid.UUID)
 
-	// Fetch category by category_id to ensure it exists
-	var category models.Category
-	if err := DB.First(&category, "id = ?", expense.CategoryID).Error; err != nil {
-    utils.SendResponse(c, http.StatusBadRequest, "Invalid category ID", nil, nil)
-    return
-	}
-
 	// Save the expense to the database
 	if err := DB.Create(&expense).Error; err != nil {
-		utils.SendResponse(c, http.StatusInternalServerError, "Error saving expense", nil, nil)
+		// If saving fails, return the error message from the database
+		utils.SendResponse(c, http.StatusInternalServerError, "Error saving expense", nil, err.Error())
 		return
 	}
 
@@ -64,12 +116,82 @@ func CreateExpense(c *gin.Context) {
 }
 
 
+// // ListUserExpenses retrieves all expenses for the authenticated user
+// func ListUserExpenses(c *gin.Context) {
+// 	// Get the user_id from the context
+// 	userID, ok := c.Get("userId")
+// 	if !ok {
+// 		utils.SendResponse(c, http.StatusUnauthorized, "User ID not found", nil, nil)
+// 		return
+// 	}
+
+// 	// Initialize filters and pagination
+// 	var expenses []models.Expense
+// 	var totalCount int64
+// 	page := utils.ParseQueryInt(c, "page", 1)
+// 	limit := utils.ParseQueryInt(c, "limit", 10)
+// 	offset := (page - 1) * limit
+
+// 	// Optional filters
+// 	startDate := c.Query("start_date")
+// 	endDate := c.Query("end_date")
+// 	categoryID := c.Query("category_id")
+// 	minAmount := c.Query("min_amount")
+// 	maxAmount := c.Query("max_amount")
+// 	sort := c.DefaultQuery("sort", "date")
+// 	order := c.DefaultQuery("order", "asc")
+
+// 	// Build the query with filters
+// 	query := db.GetDBInstance().Model(&models.Expense{}).Where("user_id = ?", userID)
+
+// 	if startDate != "" {
+// 		if parsedDate, err := time.Parse("2006-01-02", startDate); err == nil {
+// 			query = query.Where("date >= ?", parsedDate)
+// 		}
+// 	}
+// 	if endDate != "" {
+// 		if parsedDate, err := time.Parse("2006-01-02", endDate); err == nil {
+// 			query = query.Where("date <= ?", parsedDate)
+// 		}
+// 	}
+// 	if categoryID != "" {
+// 		query = query.Where("category_id = ?", categoryID)
+// 	}
+// 	if minAmount != "" {
+// 		query = query.Where("amount >= ?", minAmount)
+// 	}
+// 	if maxAmount != "" {
+// 		query = query.Where("amount <= ?", maxAmount)
+// 	}
+
+// 	// Count the total number of records
+// 	query.Count(&totalCount)
+
+// 	// Apply sorting, pagination, and fetch the results
+// 	if err := query.Order(sort + " " + order).
+// 		Offset(offset).
+// 		Limit(limit).
+// 		Find(&expenses).Error; err != nil {
+// 		utils.SendResponse(c, http.StatusInternalServerError, "Failed to fetch expenses", nil, nil)
+// 		return
+// 	}
+
+// 	// Use CalculatePagination to generate pagination info
+// 	pagination := utils.CalculatePagination(int(totalCount), page, limit)
+
+// 	// Send the response with pagination
+// 	utils.SendResponse(c, http.StatusOK, "Expenses fetched successfully", expenses, pagination)
+// }
+
 // ListUserExpenses retrieves all expenses for the authenticated user
 func ListUserExpenses(c *gin.Context) {
 	// Get the user_id from the context
 	userID, ok := c.Get("userId")
 	if !ok {
-		utils.SendResponse(c, http.StatusUnauthorized, "User ID not found", nil, nil)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status":  http.StatusUnauthorized,
+			"message": "User ID not found",
+		})
 		return
 	}
 
@@ -120,16 +242,35 @@ func ListUserExpenses(c *gin.Context) {
 		Offset(offset).
 		Limit(limit).
 		Find(&expenses).Error; err != nil {
-		utils.SendResponse(c, http.StatusInternalServerError, "Failed to fetch expenses", nil, nil)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": "Failed to fetch expenses",
+		})
 		return
 	}
 
-	// Use CalculatePagination to generate pagination info
-	pagination := utils.CalculatePagination(int(totalCount), page, limit)
+	// Calculate total pages for pagination
+	totalPages := (int(totalCount) + limit - 1) / limit
 
-	// Send the response with pagination
-	utils.SendResponse(c, http.StatusOK, "Expenses fetched successfully", expenses, pagination)
+	// Prepare the response
+	response := gin.H{
+		"status":  http.StatusOK,
+		"message": "Expenses fetched successfully",
+		"data": gin.H{
+			"expenses": expenses,
+			"pagination": gin.H{
+				"total_count": int(totalCount),
+				"page":        page,
+				"per_page":    limit,
+				"total_pages": totalPages,
+			},
+		},
+	}
+
+	// Send the response directly
+	c.JSON(http.StatusOK, response)
 }
+
 
 // GetExpense retrieves detailed information about a specific expense
 func GetExpense(c *gin.Context) {
@@ -306,6 +447,7 @@ func DeleteExpense(c *gin.Context) {
 	utils.SendResponse(c, http.StatusOK, "Expense deleted successfully", nil, nil)
 }
 
+
 // ExpenseAnalysis calculates and returns insights about user expenses
 func ExpenseAnalysis(c *gin.Context) {
 	// Get user_id from context
@@ -318,12 +460,10 @@ func ExpenseAnalysis(c *gin.Context) {
 	// Retrieve query parameters
 	startDate := c.DefaultQuery("start_date", "")
 	endDate := c.DefaultQuery("end_date", "")
-	categoryID := c.DefaultQuery("category_id", "")
 	period := c.DefaultQuery("period", "month")
 
-	// Build the query
-	var analysisData []models.Expense
-	query := db.GetDBInstance().Where("user_id = ?", userID)
+	// Base query
+	query := db.GetDBInstance().Table("expenses").Where("user_id = ?", userID)
 
 	// Apply filters
 	if startDate != "" {
@@ -332,20 +472,83 @@ func ExpenseAnalysis(c *gin.Context) {
 	if endDate != "" {
 		query = query.Where("date <= ?", endDate)
 	}
-	if categoryID != "" {
-		query = query.Where("category_id = ?", categoryID)
+
+	// Analysis results
+	var result struct {
+		Period               string                 `json:"period"`
+		TotalSpending        float64                `json:"total_spending"`
+		AverageSpending      float64                `json:"average_spending"`
+		HighestExpense       float64                `json:"highest_expense"`
+		CategoryBreakdown    []map[string]any       `json:"category_breakdown"`
+		MostFrequentCategory map[string]any         `json:"most_frequent_category"`
+		DailyAverage         float64                `json:"daily_average"`
 	}
 
-	// Group by period (e.g., monthly)
-	if period == "month" {
-		query = query.Group("strftime('%Y-%m', date)").Select("strftime('%Y-%m', date) as period, sum(amount) as total_spending").Scan(&analysisData)
+	result.Period = period
+	fmt.Println("Period Query Param:", result.Period)
+	// Basic statistics
+	query.Select(`
+		SUM(amount) AS total_spending,
+		AVG(amount) AS average_spending,
+		MAX(amount) AS highest_expense`).
+		Scan(&result)
+
+	// Daily average spending
+	var daysWithExpenses int
+	db.GetDBInstance().
+			Table("expenses").
+			Where("user_id = ?", userID).
+			Select("COUNT(DISTINCT date) AS days").
+			Row().
+			Scan(&daysWithExpenses)
+
+	if daysWithExpenses > 0 {
+			result.DailyAverage = result.TotalSpending / float64(daysWithExpenses)
+	} else {
+			result.DailyAverage = 0 // No expenses, so average is zero
 	}
 
-	// Execute query
-	if err := query.Find(&analysisData).Error; err != nil {
-		utils.SendResponse(c, http.StatusInternalServerError, "Failed to fetch analysis data", nil, nil)
-		return
+	// Category breakdown
+	var categoryData []struct {
+		CategoryID string  `json:"category_id"`
+		Total      float64 `json:"total"`
+		Percentage float64 `json:"percentage"`
+	}
+	db.GetDBInstance().
+		Table("expenses").
+		Select("category_id, SUM(amount) AS total, SUM(amount) * 100 / ? AS percentage", result.TotalSpending).
+		Where("user_id = ?", userID).
+		Group("category_id").
+		Scan(&categoryData)
+
+	// Convert categoryData to []map[string]any
+	for _, cat := range categoryData {
+		result.CategoryBreakdown = append(result.CategoryBreakdown, map[string]any{
+			"category_id": cat.CategoryID,
+			"total":       cat.Total,
+			"percentage":  cat.Percentage,
+		})
 	}
 
-	utils.SendResponse(c, http.StatusOK, "Expense analysis fetched successfully", analysisData, nil)
+	// Most frequent category
+	var mostFrequent struct {
+		CategoryID string `json:"category_id"`
+		Count      int    `json:"count"`
+	}
+	db.GetDBInstance().
+		Table("expenses").
+		Select("category_id, COUNT(*) AS count").
+		Where("user_id = ?", userID).
+		Group("category_id").
+		Order("count DESC").
+		Limit(1).
+		Scan(&mostFrequent)
+
+	result.MostFrequentCategory = map[string]any{
+		"category_id": mostFrequent.CategoryID,
+		"count":       mostFrequent.Count,
+	}
+
+	// Send the response
+	utils.SendResponse(c, http.StatusOK, "Expense analysis fetched successfully", result, nil)
 }
