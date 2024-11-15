@@ -18,3 +18,15 @@ type Expense struct {
 	CreatedAt          time.Time     `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt          time.Time     `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
+
+
+
+// ExpenseAnalysisResult represents the result of the expense analysis query.
+type ExpenseAnalysisResult struct {
+	Period            string             `json:"period"`
+	TotalSpending     float64            `json:"total_spending"`
+	AverageSpending   float64            `json:"average_spending"`
+	CategoryBreakdown map[string]float64 `json:"category_breakdown,omitempty"`
+	HighestExpense    float64            `json:"highest_expense,omitempty"`
+	RecurringTotal    float64            `json:"recurring_total,omitempty"`
+}
