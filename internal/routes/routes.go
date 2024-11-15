@@ -39,8 +39,8 @@ func BudgetRoutes(router *gin.Engine) {
 	budgetGroup := router.Group("/api/v1/budgets")
 	budgetGroup.Use(middleware.AuthMiddleware())
 	{
-		budgetGroup.POST("/", controller.CreateBudget)     // Create a new budget
-		budgetGroup.GET("/", controller.ListBudgets)       // List all budgets
+		budgetGroup.POST("/", controller.CreateBudget)             // Create a new budget
+		budgetGroup.GET("/", controller.ListBudgets)               // List all budgets
 		budgetGroup.GET("/:budgetId", controller.GetSingleBudget)  // Get a single budget
 		budgetGroup.PUT("/:budgetId", controller.UpdateBudget)     // Update a budget
 		budgetGroup.DELETE("/:budgetId", controller.DeleteBudget)  // Delete a budget
