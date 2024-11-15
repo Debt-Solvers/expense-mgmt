@@ -20,8 +20,8 @@ jobs:
 
       # Step 3: Build the Docker image
       - name: Build Docker Image
-        run: docker build -t caa900debtsolverproject-expense-mgmt:latest .
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/caa900debtsolverproject-expense-mgmt:latest .
 
       # Step 4: Push the Docker image
       - name: Push Docker Image
-        run: docker push caa900debtsolverproject-expense-mgmt:latest
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/caa900debtsolverproject-expense-mgmt:latest
