@@ -89,7 +89,8 @@ docker run -p 8081:8081 expense-service
 
 ## Categories
 
-<h5>Get Default Categories</h5>
+### Get Default Categories
+
 <p>
   <em>Endpoint</em>:GET /api/v1/categories/defaults </br>
   <em>Query Parameters</em>:None </br>
@@ -303,19 +304,31 @@ docker run -p 8081:8081 expense-service
   </code>
 </p>
 
-<h5>Auth User All Expenses</h5>
-<p>
-  <em>Endpoint</em>:GET /api/v1/expenses/?page=1&limit=10&sort=date&order=asc</br>
-  <em>Query Parameters</em>:
-    page        [int]    - The page number for pagination (default is 1)
-    limit       [int]    - The number of items per page (default is 10)
-    start_date  [string] - The start date for filtering expenses (format: YYYY-MM-DD)
-    end_date    [string] - The end date for filtering expenses (format: YYYY-MM-DD)
-    category_id [string] - The ID of the category to filter expenses by
-    min_amount  [float]  - The minimum amount to filter the expenses by
-    max_amount  [float]  - The maximum amount to filter the expenses by
-    sort        [string] - The field by which to sort the results (default is "date")
-    order       [string] - The order of sorting (default is "asc"; options: "asc", "desc")
+## Auth User All Expenses
+
+### Endpoint
+
+`GET /api/v1/expenses/`
+
+### Query Parameters
+
+| Parameter     | Type     | Description                                  | Default | Options/Format             |
+| ------------- | -------- | -------------------------------------------- | ------- | -------------------------- |
+| `page`        | [int]    | The page number for pagination               | `1`     | N/A                        |
+| `limit`       | [int]    | The number of items per page                 | `10`    | N/A                        |
+| `start_date`  | [string] | The start date for filtering expenses        | N/A     | Format: `YYYY-MM-DD`       |
+| `end_date`    | [string] | The end date for filtering expenses          | N/A     | Format: `YYYY-MM-DD`       |
+| `category_id` | [string] | The ID of the category to filter expenses by | N/A     | N/A                        |
+| `min_amount`  | [float]  | The minimum amount to filter the expenses by | N/A     | N/A                        |
+| `max_amount`  | [float]  | The maximum amount to filter the expenses by | N/A     | N/A                        |
+| `sort`        | [string] | The field by which to sort the results       | `date`  | N/A                        |
+| `order`       | [string] | The order of sorting                         | `asc`   | Options: `"asc"`, `"desc"` |
+
+### Notes:
+
+- By default, the `page` is set to `1`, and `limit` is set to `10` if not specified.
+- Date filters must follow the format `YYYY-MM-DD`.
+- Sorting can be done by `date` (default), and the sorting order can be either `asc` or `desc`.
 
   </br>
   <em>Response</em>: </br>
