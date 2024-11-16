@@ -85,6 +85,17 @@ go run cmd/expense-service/main.go
 docker build -t expense-service .
 docker run -p 8081:8081 expense-service
 
+## Environment Varibles
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=yourpassword
+DB_NAME=expense_service_db
+
+JWT_SECRET=DebtSolverSecret
+JWT_EXPIRATION_HOURS=24
+
 # API Endpoints
 
 ## Categories
@@ -411,7 +422,7 @@ Occurs when the user provides an invalid or expired token.
 - **Endpoint**: `GET /api/v1/expenses/`
 - **Description**: This endpoint allows users to retrieve a list of all expenses associated with their account. It supports pagination and filtering by date range, category, amount, and sorting by date.
 
-### Query Parameters
+- **Query Parameters**:
 
 | Parameter     | Type     | Description                                    | Default | Options/Format             |
 | ------------- | -------- | ---------------------------------------------- | ------- | -------------------------- |
@@ -555,9 +566,7 @@ None.
 
 `DELETE /api/v1/expenses/{expenseId}`
 
-- **Query Parameters**:
-
-None
+- **Query Parameters**: None
 
 - **Response**:
 
@@ -635,15 +644,21 @@ This endpoint is designed to aggregate and analyze expense data. It provides ins
 This endpoint aggregates data and offers a high-level overview rather than providing individual expense records, which is the focus of CRUD operations.
 
 - **Endpoint**:
-  `GET /api/v1/expenses/Analysis?start_date=2024-01-01&end_date=2024-12-31&period=month`
+  `GET /api/v1/expenses/Analysis`
+- **Example Query**:
+
+```http
+GET /api/v1/expenses/analysis?start_date=2024-01-01&end_date=2024-12-31&period=month&page=1&per_page=1&category_id=46bbdd03-d7d0-4a29-8f1e-31f9cfcc666e
+```
 
 - **Query Parameters**:
 
-| Parameter    | Type   | Description                                                       | Default | Options/Format                          |
-| ------------ | ------ | ----------------------------------------------------------------- | ------- | --------------------------------------- |
-| `start_date` | string | The start date for the analysis period. Format: `YYYY-MM-DD`      | N/A     | Format: `YYYY-MM-DD`                    |
-| `end_date`   | string | The end date for the analysis period. Format: `YYYY-MM-DD`        | N/A     | Format: `YYYY-MM-DD`                    |
-| `period`     | string | The period for which to analyze expenses (e.g., `month`, `week`). | `month` | Options: `"month"`, `"week"`, `"daily"` |
+| Parameter     | Type   | Description                                                       | Default | Options/Format                          |
+| ------------- | ------ | ----------------------------------------------------------------- | ------- | --------------------------------------- |
+| `start_date`  | string | The start date for the analysis period. Format: `YYYY-MM-DD`      | N/A     | Format: `YYYY-MM-DD`                    |
+| `end_date`    | string | The end date for the analysis period. Format: `YYYY-MM-DD`        | N/A     | Format: `YYYY-MM-DD`                    |
+| `period`      | string | The period for which to analyze expenses (e.g., `month`, `week`). | `month` | Options: `"month"`, `"week"`, `"daily"` |
+| `category_id` | uuid   | The category id to be analyze (e.g., `uuid`).                     |
 
 - **Response**:
 
@@ -687,94 +702,253 @@ This endpoint aggregates data and offers a high-level overview rather than provi
 
 ## Budgets
 
-### POST /api/v1/budgets
+### Create Budget
 
-<p>Description: Creates a new budget for the user.</p>
+This endpoint allows users to create a new budget. A budget is defined for a specific category and time period, with a set amount to track expenses against.
 
-<p>
-  <code>
-    {
-    "category_id": "d951a6bc-b346-4131-b294-fe7b33edcd59", // UUID, required, category for which the budget is set
-    "amount": 500.00, // float, required, budget amount
-    "start_date": "2024-12-01", // string, required, the start date in YYYY-MM-DD format
-    "end_date": "2024-12-31" // string, required, the end date in YYYY-MM-DD format
-    }
-  </code>
-</p>
+- **Endpoint**:
+  `POST /api/v1/budgets`
 
-<p>
-  <code>
-    {
-      "status": "success",
-      "message": "Budget created successfully",
-        "data": {
-        "budget_id": "uuid", // The generated budget ID
-        "user_id": "uuid", // User's ID
-        "category_id": "uuid", // Associated category ID
-        "amount": 500.00, // Budget amount
-        "start_date": "2024-12-01", // Budget start date
-        "end_date": "2024-12-31" // Budget end date
-      }
-    }
-  </code>
-  <code>
-    {
-    "status": "error",
-    "message": "Invalid input: {error_message}"
-    }
-  </code>
-</p>
+- **Request Body**:
 
-<p>
-  Endpoint: GET /api/v1/budgets
+| Parameter     | Type   | Description                                           | Format                           | Required |
+| ------------- | ------ | ----------------------------------------------------- | -------------------------------- | -------- |
+| `category_id` | string | The UUID of the category for which the budget is set. | Format: `UUID`                   | Yes      |
+| `amount`      | float  | The amount for the budget.                            | Format: Decimal (e.g., `500.00`) | Yes      |
+| `start_date`  | string | The start date for the budget period.                 | Format: `YYYY-MM-DD`             | Yes      |
+| `end_date`    | string | The end date for the budget period.                   | Format: `YYYY-MM-DD`             | Yes      |
 
-Endpoint: GET /api/v1/budgets/{budgetId}
+#### Example Request Body
 
-This endpoint retrieves a specific budget by its ID.
-
-JSON Query Parameters:
-None
-
-</p>
-<h5>Auth User All Budgets</h5>
-<p>
-  Get All Budgets (List Budgets)
-  Endpoint: GET /api/v1/budgets
-
-This endpoint will allow you to list all budgets, with optional query parameters for filtering.
-
-JSON Query Parameters:
-period: current, upcoming, past
-category_id: Filter budgets by category
-start_date: Filter budgets starting from this date
-end_date: Filter budgets ending before this date
-status: active, exceeded, upcoming
-
-</p>
-
-<h5>Update Singele Budget</h5>
-<p> Endpoint: PUT /api/v1/budgets/{budgetId}
-
-This endpoint will update an existing budget's amount, category, or date range.
+```json
 {
-"amount": 600.00,
-"start_date": "2024-12-05",
-"end_date": "2024-12-31",
-"category_id": "a2f3b6c7-d567-492f-a8f7-b7c3b9d7e1d4"
+	"category_id": "d951a6bc-b346-4131-b294-fe7b33edcd59",
+	"amount": 500.0,
+	"start_date": "2024-12-01",
+	"end_date": "2024-12-31"
 }
+```
 
-  </p>
+- **Response**:
 
-  <p>
-    Delete Budget
-    Endpoint: DELETE /api/v1/budgets/{budgetId}
+  #### Success
 
-    This endpoint will remove a specific budget.
+  ```json
+  {
+  	"status": "success",
+  	"message": "Budget created successfully",
+  	"data": {
+  		"budget_id": "uuid",
+  		"user_id": "uuid",
+  		"category_id": "uuid",
+  		"amount": 500.0,
+  		"start_date": "2024-12-01",
+  		"end_date": "2024-12-31"
+  	}
+  }
+  ```
 
-    JSON Body:
-    None
+  #### Error
 
-  </p>
+  ```json
+  {
+  	"message": "Invalid input: Key: 'BudgetInput.Amount' Error:Field validation for 'Amount' failed on the 'gt' tag",
+  	"data": null,
+  	"errors": null
+  }
+  {
+    "message": "Budget period overlaps with an existing budget for the same category",
+    "data": null,
+    "errors": null
+  }
+
+  ```
+
+### Get Single Budget
+
+This endpoint retrieves detailed information about a specific budget by its ID.
+
+- **Endpoint**:
+  `GET /api/v1/budgets/{budgetId}`
+
+- **Query Parameters**:
+- **None** (The budget ID is passed as part of the URL.)
+
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": "success",
+  	"message": "Budget fetched successfully",
+  	"data": {
+  		"budget_id": "uuid", // The ID of the budget
+  		"user_id": "uuid", // User's ID
+  		"category_id": "uuid", // Category associated with the budget
+  		"amount": 500.0, // The budgeted amount
+  		"start_date": "2024-12-01", // Budget start date
+  		"end_date": "2024-12-31" // Budget end date
+  	}
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": "error",
+  	"message": "Budget not found"
+  }
+  ```
+
+### List All Budgets
+
+This endpoint allows users to list all budgets with optional query parameters for filtering based on various criteria.
+
+- **Endpoint**: `GET /api/v1/budgets`
+
+- **Query Parameters**:
+
+| Parameter     | Type   | Description                                                | Default | Options/Format                   |
+| ------------- | ------ | ---------------------------------------------------------- | ------- | -------------------------------- |
+| `category_id` | string | Filter budgets by category ID                              | None    | UUID                             |
+| `start_date`  | string | Filter budgets starting from this date                     | None    | Format: `YYYY-MM-DD`             |
+| `end_date`    | string | Filter budgets ending before this date                     | None    | Format: `YYYY-MM-DD`             |
+| `period`      | string | Filter budgets by period: `current`, `upcoming`, `past`    | None    | `current`, `upcoming`, `past`    |
+| `status`      | string | Filter budgets by status: `active`, `exceeded`, `upcoming` | None    | `active`, `exceeded`, `upcoming` |
+
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": "success",
+  	"message": "Budgets fetched successfully",
+  	"data": [
+  		{
+  			"budget_id": "uuid", // The ID of the budget
+  			"user_id": "uuid", // User's ID
+  			"category_id": "uuid", // Category associated with the budget
+  			"amount": 500.0, // The budgeted amount
+  			"start_date": "2024-12-01", // Budget start date
+  			"end_date": "2024-12-31" // Budget end date
+  		},
+  		{
+  			"budget_id": "uuid", // The ID of the budget
+  			"user_id": "uuid", // User's ID
+  			"category_id": "uuid", // Category associated with the budget
+  			"amount": 300.0, // The budgeted amount
+  			"start_date": "2024-01-01", // Budget start date
+  			"end_date": "2024-01-31" // Budget end date
+  		}
+  	]
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": "error",
+  	"message": "Failed to fetch budgets"
+  }
+  ```
+
+### Update Single Budget
+
+This endpoint allows users to update an existing budget. The user can modify the amount, category, or date range of an existing budget.
+
+- **Endpoint**: `PUT /api/v1/budgets/{budgetId}`
+
+- **Request Body**:
+
+The body of the request should contain the fields that need to be updated. The following parameters are required:
+
+| Parameter     | Type   | Description                                   | Format/Options                                      |
+| ------------- | ------ | --------------------------------------------- | --------------------------------------------------- |
+| `amount`      | float  | The new amount for the budget.                | Positive float (e.g., 600.00)                       |
+| `category_id` | string | The category ID to associate with the budget. | UUID (e.g., `d951a6bc-b346-4131-b294-fe7b33edcd59`) |
+| `start_date`  | string | The start date for the updated budget.        | Date format `YYYY-MM-DD`                            |
+| `end_date`    | string | The end date for the updated budget.          | Date format `YYYY-MM-DD`                            |
+
+- **Example Request Body**:
+
+  ```json
+  {
+  	"amount": 600.0,
+  	"category_id": "a2f3b6c7-d567-492f-a8f7-b7c3b9d7e1d4",
+  	"start_date": "2024-12-05",
+  	"end_date": "2024-12-31"
+  }
+  ```
+
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": "success",
+  	"message": "Budget updated successfully",
+  	"data": {
+  		"budget_id": "uuid",
+  		"user_id": "uuid",
+  		"category_id": "a2f3b6c7-d567-492f-a8f7-b7c3b9d7e1d4",
+  		"amount": 600.0,
+  		"start_date": "2024-12-05",
+  		"end_date": "2024-12-31"
+  	}
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": "error",
+  	"message": "Invalid input: {error_message}"
+  }
+
+  {
+    "status": "error",
+    "message": "Budget not found"
+  }
+
+  ```
+
+### Delete Budget
+
+This endpoint allows users to delete a specific budget.
+
+- **Endpoint**: `DELETE /api/v1/budgets/{budgetId}`
+
+- **Request Body**: `None`
+
+- **Example Request**:
+
+- **No JSON body is needed** for this endpoint.
+
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": "success",
+  	"message": "Budget deleted successfully"
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": "error",
+  	"message": "Budget not found"
+  }
+  ```
 
   <p>
     Budget Analysis (GET /api/v1/budgets/analysis)
@@ -790,17 +964,6 @@ This endpoint will update an existing budget's amount, category, or date range.
 
 ### Receipts
 
-## Environment Varibles
-
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=yourpassword
-DB_NAME=expense_service_db
-
-JWT_SECRET=DebtSolverSecret
-JWT_EXPIRATION_HOURS=24
-
 ## License
 
 &copy This project is open-source and licensed under the MIT License.
@@ -808,3 +971,11 @@ JWT_EXPIRATION_HOURS=24
 ## Contributions
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+```
+
+```
+
+```
+
+```
