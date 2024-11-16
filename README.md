@@ -549,94 +549,141 @@ None.
 - **Error Handling**: The `404` error should be returned if the `expenseId` does not exist in the system. You may also consider handling other types of errors (e.g., unauthorized access).
 - **Access Control**: Make sure that the user can only access their own expenses. You can validate the `user_id` and ensure it matches the authenticated user's ID.
 
-  <h5>Delete Single Expense</h5>
-  <p>
-    <em>Endpoint</em>:DELETE /api/v1/expenses/{expenseId} </br>
-    <em>Query Parameters</em>:None </br>
-    <em>Response</em>: </br>
-    <code>
-    {
-      "status": 200,
-      "message": "Expense deleted successfully"
-    }
-    </br>
-      {
-        "status": 404,
-        "message": "Expense not found"
-      }
-    </code>
-  </p>
+### Delete Single Expense
 
-<h5>Update Single Expense</h5>
-<p>
-  <em>Endpoint</em>:PUT /api/v1/expenses/{expenseId} </br>
-  <em>Query Parameters</em>:
-    <code>
-    {
-      "amount": 90000,
-      "category_id": "05b218b7-e8c3-4b8d-9682-7d555996f2f6",
-      "date": "2024-11-14T00:00:00Z",
-      "description":"updated expenses"
-    }
+- **Endpoint**:
 
-    </code>
+`DELETE /api/v1/expenses/{expenseId}`
 
-  </br>
-  <em>Response</em>: </br>
-  <code>
-    {
-      "status": 200,
-      "message": "Expense deleted successfully"
-    }
-  </br>
-   {
-    "status": 200,
-    "message": "Expense updated successfully",
-    "data": {
-        "expense_id": "f00c1593-8aca-43f1-bbd3-42d3c96c725d",
-        "user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
-        "category_id": "05b218b7-e8c3-4b8d-9682-7d555996f2f6",
-        "amount": 90000,
-        "date": "2024-11-13T19:00:00-05:00",
-        "description": "updated expenses",
-        "receipt_id": null,
-        "created_at": "2024-11-14T22:28:18.266748-05:00",
-        "updated_at": "2024-11-14T22:29:49.001179-05:00"
-    }
+- **Query Parameters**:
+
+None
+
+- **Response**:
+
+  ##### Success
+
+  ```json
+  {
+  	"status": 200,
+  	"message": "Expense deleted successfully"
   }
-  </code>
-</p>
+  ```
 
-<h5>Expenses Analysis Endpoint</h5>
+  #### Error
 
-<p>This endpoint is more focused on aggregating and analyzing the data. It’s about providing insights based on the expenses. For example:</p></br>
+  ```json
+  {
+  	"status": 404,
+  	"message": "Expense not found"
+  }
+  ```
 
-<p>Total spending in a specific period (e.g., month, week).
-  Expenditure by category or across time periods.
-  Patterns in spending to help the user understand their spending habits.
-  The Expense Analysis could use aggregate data, providing a summary or high-level view, rather than individual records, which is what CRUD operations focus on.
-</p>
+### Update Single Expense
 
-<em>Endpoint</em>:GET /api/v1/expenses/Analysis?start_date=2024-01-01&end_date=2024-12-31&period=month </br>
-<em>Query Parameters</em>: None
-</br>
+- **Endpoint**:
+  `PUT /api/v1/expenses/{expenseId}`
 
-<em>Response</em>: </br>
-<code>
-{
-"status": 200,
-"message": "Expense analysis fetched successfully",
-"data": {
-"period": "daily",
-"total_spending": 91200,
-"average_spending": 249.18032786885246,
-"highest_expense": 90000
-}
-}
-<br>
+- **Query Parameters**:
+  ```json
+  {
+  	"amount": 90000,
+  	"category_id": "05b218b7-e8c3-4b8d-9682-7d555996f2f6",
+  	"date": "2024-11-14T00:00:00Z",
+  	"description": "updated expenses"
+  }
+  ```
+- **Response**:
 
-</code>
-</br>
+  #### Success
+
+  ```json
+  {
+  	"status": 200,
+  	"message": "Expense updated successfully",
+  	"data": {
+  		"expense_id": "f00c1593-8aca-43f1-bbd3-42d3c96c725d",
+  		"user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
+  		"category_id": "05b218b7-e8c3-4b8d-9682-7d555996f2f6",
+  		"amount": 90000,
+  		"date": "2024-11-13T19:00:00-05:00",
+  		"description": "updated expenses",
+  		"receipt_id": null,
+  		"created_at": "2024-11-14T22:28:18.266748-05:00",
+  		"updated_at": "2024-11-14T22:29:49.001179-05:00"
+  	}
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": 404,
+  	"message": "Expense not found"
+  }
+  ```
+
+### Expenses Analysis Endpoint
+
+This endpoint is designed to aggregate and analyze expense data. It provides insights and summaries of the user's spending habits over specific time periods or by categories. The analysis may include:
+
+- Total spending within a specific period (e.g., month, week).
+- Expenditure by category or over time.
+- Spending patterns to help the user understand their financial habits.
+
+This endpoint aggregates data and offers a high-level overview rather than providing individual expense records, which is the focus of CRUD operations.
+
+- **Endpoint**:
+  `GET /api/v1/expenses/Analysis?start_date=2024-01-01&end_date=2024-12-31&period=month`
+
+- **Query Parameters**:
+
+| Parameter    | Type   | Description                                                       | Default | Options/Format                          |
+| ------------ | ------ | ----------------------------------------------------------------- | ------- | --------------------------------------- |
+| `start_date` | string | The start date for the analysis period. Format: `YYYY-MM-DD`      | N/A     | Format: `YYYY-MM-DD`                    |
+| `end_date`   | string | The end date for the analysis period. Format: `YYYY-MM-DD`        | N/A     | Format: `YYYY-MM-DD`                    |
+| `period`     | string | The period for which to analyze expenses (e.g., `month`, `week`). | `month` | Options: `"month"`, `"week"`, `"daily"` |
+
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": 200,
+  	"message": "Expense analysis fetched successfully",
+  	"data": {
+  		"period": "month",
+  		"total_spending": 9150.45,
+  		"average_spending": 1525.075,
+  		"highest_expense": 4300,
+  		"category_breakdown": [
+  			{
+  				"category_id": "0ec4e2ba-4623-4380-b1d0-eb3d0b0c3e6f",
+  				"percentage": 8.201236004786649,
+  				"total": 750.45
+  			},
+  			{
+  				"category_id": "46bbdd03-d7d0-4a29-8f1e-31f9cfcc666e",
+  				"percentage": 30.59958799840445,
+  				"total": 2800
+  			}
+  		],
+  		"most_frequent_category": {
+  			"category_id": "46bbdd03-d7d0-4a29-8f1e-31f9cfcc666e",
+  			"count": 2
+  		},
+  		"daily_average": 9150.45,
+  		"pagination": {
+  			"total_count": 2,
+  			"page": 1,
+  			"per_page": 10,
+  			"total_pages": 1
+  		}
+  	}
+  }
+  ```
 
 ## Budgets
 
@@ -761,6 +808,14 @@ JWT_EXPIRATION_HOURS=24
 ## Contributions
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+```
+
+```
+
+```
+
+```
 
 ```
 
