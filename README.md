@@ -85,102 +85,111 @@ go run cmd/expense-service/main.go
 docker build -t expense-service .
 docker run -p 8081:8081 expense-service
 
-## API Endpoints
+# API Endpoints
 
 ## Categories
 
 ### Get Default Categories
 
-Endpoint:GET /api/v1/categories/defaults
-Query Parameters:None
-Response
-<code>
-{
-"status": 200,
-"message": "Fetched default categories successfully",
-"data": {
-"categories": [
-{
-"category_id": "74e21b0b-8ad8-49a1-8a01-7e74e250e713",
-"name": "Food & Dining",
-"description": "Restaurants, groceries, and food delivery",
-"color_code": "#FFD700",
-"is_default": true,
-"created_at": "2024-11-12T19:06:54.155524-05:00",
-"updated_at": "2024-11-12T19:06:54.155524-05:00",
-"deleted_at": null
-}
-]
-}
-}
-</code>
-
-<h5>Auth User All Categories</h5>
-<p>
-  <em>Endpoint</em>:GET /api/v1/categories/</br>
-  <em>Query Parameters</em>:None </br>
-  <em>Response</em>: </br>
-  <code>
-    {
-    "status": 200,
-    "message": "Categories retrieved successfully",
-    "data": [
-      {
-        "category_id": "35983bbe-a8f1-4b76-bf42-ec598a4791e2",
-        "name": "Education",
-        "description": "Tuition, books, courses, training",
-        "color_code": "#4682B4",
-        "is_default": true,
-        "created_at": "2024-11-14T12:37:36.101612-05:00",
-        "updated_at": "2024-11-14T12:37:36.101612-05:00",
-        "deleted_at": null
-      },
-        {
-          "category_id": "c48e168b-fab9-45a3-a72a-9648e4aca537",
-          "name": "Utilities",
-          "description": "Electricity, water, internet, phone",
-          "color_code": "#A9A9A9",
-          "is_default": true,
-          "created_at": "2024-11-14T12:37:36.104216-05:00",
-          "updated_at": "2024-11-14T12:37:36.104216-05:00",
-          "deleted_at": null
-        }
-      ]
-    }
-  </br>
+- **Endpoint**: `/api/v1/categories/defaults`
+- **Method**: `GET`
+- **Description**: Returns default categories.
+- **Query Parameters**: `None`
+- **Response**:
+  ```json
   {
-    "status": 401,
-    "message": "Token is invalid or expired"
+  	"status": 200,
+  	"message": "Fetched default categories successfully",
+  	"data": {
+  		"categories": [
+  			{
+  				"category_id": "74e21b0b-8ad8-49a1-8a01-7e74e250e713",
+  				"name": "Food & Dining",
+  				"description": "Restaurants, groceries, and food delivery",
+  				"color_code": "#FFD700",
+  				"is_default": true,
+  				"created_at": "2024-11-12T19:06:54.155524-05:00",
+  				"updated_at": "2024-11-12T19:06:54.155524-05:00",
+  				"deleted_at": null
+  			}
+  		]
+  	}
   }
-  </code>
-</p>
+  ```
 
-<h5>Create Custom Category</h5>
-<p>
-  <em>Endpoint</em>:POST /api/v1/categories/</br>
-  <em>Query Parameters</em> </br>
-    <code>
-    {
-      "name": "Dating and Video Games!",
-      "description":"Online Streaming Contents" | optional
-    }
-    </code> 
-    </br>
-  <em>Response</em>: </br>
-  <code>
-    {
-      "status": 201,
-      "message": "Category created successfully",
-      "data": "05b218b7-e8c3-4b8d-9682-7d555996f2f6"
-    }
-    <hr>
+### Auth User All Categories
 
-    {
-      "error": "Category name already exists"
-    }
+- **Endpoint**: `GET /api/v1/categories/`
+- **Query Parameters**: `None`
+- **Response**:
+  #### Success Response:
+  ```json
+  {
+  	"status": 200,
+  	"message": "Categories retrieved successfully",
+  	"data": [
+  		{
+  			"category_id": "35983bbe-a8f1-4b76-bf42-ec598a4791e2",
+  			"name": "Education",
+  			"description": "Tuition, books, courses, training",
+  			"color_code": "#4682B4",
+  			"is_default": true,
+  			"created_at": "2024-11-14T12:37:36.101612-05:00",
+  			"updated_at": "2024-11-14T12:37:36.101612-05:00",
+  			"deleted_at": null
+  		},
+  		{
+  			"category_id": "c48e168b-fab9-45a3-a72a-9648e4aca537",
+  			"name": "Utilities",
+  			"description": "Electricity, water, internet, phone",
+  			"color_code": "#A9A9A9",
+  			"is_default": true,
+  			"created_at": "2024-11-14T12:37:36.104216-05:00",
+  			"updated_at": "2024-11-14T12:37:36.104216-05:00",
+  			"deleted_at": null
+  		}
+  	]
+  }
+  ```
 
-  </code>
-</p>
+#### Error Response
+
+Occurs when the user provides an invalid or expired token.
+
+```json
+{
+	"status": 401,
+	"message": "Token is invalid or expired"
+}
+```
+
+### Create Custom Category
+
+- **Endpoint**: `POST /api/v1/categories/`
+- **Description**: This endpoint allows users to create a custom category. Each category must have a unique name.
+
+- **Request Body**:
+  ```json
+  {
+  	"name": "Dating and Video Games!", // Required. The unique name of the category.
+  	"description": "Online Streaming Contents" // Optional. A brief description of the category.
+  }
+  ```
+- **Response**:
+  #### Success
+  ```json
+  {
+  	"status": 201,
+  	"message": "Category created successfully",
+  	"data": "05b218b7-e8c3-4b8d-9682-7d555996f2f6" // The unique ID of the created category.
+  }
+  ```
+  #### Error
+  ```json
+  {
+  	"error": "Category name already exists"
+  }
+  ```
 
 <h5>Get Single Category Details</h5>
 <p>
@@ -271,7 +280,7 @@ Response
         "amount": 123.45,
         "date": "2024-11-14T00:00:00Z",
         "description": "Toyota Camry Car Insurance"
-        "receipt_id": "your-receipt-uuid-here" // optional but can be linked to an already uploaded receipt. 
+        "receipt_id": "your-receipt-uuid-here" // optional but can be linked to an already uploaded receipt.
       }
     </code>
 <br>
@@ -538,7 +547,7 @@ Response
   </code>
 </p>
 
-<p> 
+<p>
   Endpoint: GET /api/v1/budgets
 
 Endpoint: GET /api/v1/budgets/{budgetId}
@@ -550,7 +559,7 @@ None
 
 </p>
 <h5>Auth User All Budgets</h5>
-<p>  
+<p>
   Get All Budgets (List Budgets)
   Endpoint: GET /api/v1/budgets
 
@@ -578,7 +587,7 @@ This endpoint will update an existing budget's amount, category, or date range.
 
   </p>
 
-  <p> 
+  <p>
     Delete Budget
     Endpoint: DELETE /api/v1/budgets/{budgetId}
 
@@ -600,7 +609,7 @@ This endpoint will update an existing budget's amount, category, or date range.
     end_date: 2024-12-31 (optional)
 
   </p>
-  
+
 ### Receipts
 
 ## Environment Varibles
@@ -621,3 +630,7 @@ JWT_EXPIRATION_HOURS=24
 ## Contributions
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+```
+
+```
