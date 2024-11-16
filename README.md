@@ -96,6 +96,7 @@ docker run -p 8081:8081 expense-service
 - **Description**: Returns default categories.
 - **Query Parameters**: `None`
 - **Response**:
+  #### Success
   ```json
   {
   	"status": 200,
@@ -168,7 +169,7 @@ Occurs when the user provides an invalid or expired token.
 - **Endpoint**: `POST /api/v1/categories/`
 - **Description**: This endpoint allows users to create a custom category. Each category must have a unique name.
 
-- **Request Body**:
+- **Query Parameters**:
   ```json
   {
   	"name": "Dating and Video Games!", // Required. The unique name of the category.
@@ -191,250 +192,380 @@ Occurs when the user provides an invalid or expired token.
   }
   ```
 
-<h5>Get Single Category Details</h5>
-<p>
-  <em>Endpoint</em>:GET /api/v1/categories/{categoryId} </br>
-  <em>Query Parameters</em>:None </br>
-  <em>Response</em>: </br>
-  <code>
-    {
-      "status": 200,
-      "message": "Category details fetched successfully",
-      "data": {
-        "category_id": "153789c9-3d4f-4b65-b25f-be065ecf028b",
-        "name": "Others",
-        "description": "Miscellaneous expenses",
-        "color_code": "#A9A9A9",
-        "is_default": true,
-        "created_at": "2024-11-12T19:06:54.209896-05:00",
-        "updated_at": "2024-11-12T19:06:54.209896-05:00",
-        "deleted_at": null
-      }
-    }
-  </br>
-    {
-      "status": 404,
-      "message": "Category not found"
-    }
-  </code>
-</p>
+### Recommendations:
 
-<h5>Update Category</h5>
-<p>
-  <em>Endpoint</em>:PUT /api/v1/categories/{categoryId} </br>
-  <em>Query Parameters</em>:
+- **Unique Category Name**: Ensure the category name is unique. If the name already exists, return an error with the message `"Category name already exists"`.
+- **Description**: Validate the description field (if provided), ensuring it’s not excessively long and is meaningful.
+- **Color Code**: If the `color_code` is provided, ensure it is in the correct format (e.g., `#RRGGBB`).
 
-  </br>
-  <em>Response</em>: </br>
-  <code>
-    {
-    "status": 200,
-    "message": "Category updated successfully",
-    "data": {
-      "category_id": "05b218b7-e8c3-4b8d-9682-7d555996f2f6",
-      "user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
-      "name": "Adventures",
-      "description": "New Grant theft auto San-Andreas",
-      "color_code": "#A8C0BD",
-      "is_default": false,
-      "created_at": "2024-11-14T17:07:32.443566-05:00",
-      "updated_at": "2024-11-14T22:06:37.9337733-05:00",
-      "deleted_at": null
-    }
-   }
-  </br>
-    {
-      "status": 404,
-      "message": "Category not found"
-    }
-  </code>
-</p>
+### Get Single Category Details
 
-<h5>Delete Category</h5>
-<p>
-  <em>Endpoint</em>:DELETE /api/v1/categories/{categoryId} </br>
-  <em>Query Parameters</em>:None </br>
-  <em>Response</em>: </br>
-  <code>
-    {
-      "status": 200,
-      "message": "Category deleted successfully"
-    }
-  </br>
-    {
-      "status": 404,
-      "message": "Category not found"
-    }
-  </code>
-</p>
+- **Endpoint**: `GET /api/v1/categories/{categoryId}`
+- **Description**: This endpoint retrieves the details of a specific category by its unique ID. It provides information such as the category name, description, color code, default status, and timestamps for creation and updates.
+
+- **Path Parameters**:
+
+  - `categoryId` (required): The unique identifier of the category you want to retrieve.
+
+- **Query Parameters**: None
+
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": 200,
+  	"message": "Category details fetched successfully",
+  	"data": {
+  		"category_id": "153789c9-3d4f-4b65-b25f-be065ecf028b",
+  		"name": "Others",
+  		"description": "Miscellaneous expenses",
+  		"color_code": "#A9A9A9",
+  		"is_default": true,
+  		"created_at": "2024-11-12T19:06:54.209896-05:00",
+  		"updated_at": "2024-11-12T19:06:54.209896-05:00",
+  		"deleted_at": null
+  	}
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": 404,
+  	"message": "Category not found"
+  }
+  ```
+
+### Update Category
+
+- **Endpoint**: `PUT /api/v1/categories/{categoryId}`
+- **Description**: This endpoint allows users to update the details of an existing category using its unique ID. You can modify attributes such as the category name, description, color code, and default status.
+
+- **Path Parameters**:
+
+  - `categoryId` (required): The unique identifier of the category to be updated.
+
+- **Request Body**:
+
+  - `name` (required): The updated name of the category.
+  - `description` (optional): A brief description of the category.
+  - `color_code` (optional): A hex color code to represent the category.
+  - `is_default` (optional): A boolean value indicating if the category is the default one.
+
+  **Example Request Body**:
+
+  ```json
+  {
+  	"name": "Adventures",
+  	"description": "New Grant theft auto San-Andreas",
+  	"color_code": "#A8C0BD",
+  	"is_default": false
+  }
+  ```
+
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": 200,
+  	"message": "Category updated successfully",
+  	"data": {
+  		"category_id": "05b218b7-e8c3-4b8d-9682-7d555996f2f6",
+  		"user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
+  		"name": "Adventures",
+  		"description": "New Grant theft auto San-Andreas",
+  		"color_code": "#A8C0BD",
+  		"is_default": false,
+  		"created_at": "2024-11-14T17:07:32.443566-05:00",
+  		"updated_at": "2024-11-14T22:06:37.9337733-05:00",
+  		"deleted_at": null
+  	}
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": 404,
+  	"message": "Category not found"
+  }
+  ```
+
+### Recommendations:
+
+- **Valid categoryId**: Ensure the `categoryId` is a valid UUID and exists in the system. Return a `404` error if the category is not found.
+- **Data Validation**: When updating the category name, ensure that the new name is unique. If the name already exists, return an appropriate error (`400` or `409`).
+- **Description**: Validate that the description, if provided, is a valid string and within acceptable length limits (e.g., 255 characters).
+- **Color Code**: If a `color_code` is provided, ensure it follows a valid format (e.g., `#RRGGBB`).
+
+### Delete Category
+
+- **Endpoint**: `DELETE /api/v1/categories/{categoryId}`
+- **Description**: This endpoint allows users to delete a category by its unique ID. Deleting a category will remove it from the system. It is recommended to implement soft deletion (e.g., setting a `deleted_at` timestamp) rather than a permanent removal.
+
+- **Path Parameters**:
+
+  - `categoryId` (required): The unique identifier of the category to be deleted.
+
+- **Query Parameters**: None
+
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": 200,
+  	"message": "Category deleted successfully"
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": 404,
+  	"message": "Category not found"
+  }
+  ```
+
+### Recommendations:
+
+- **Valid categoryId**: Ensure the `categoryId` is a valid UUID and exists in the system. Return a `404` error if the category is not found.
+- **Deletion Logic**: Consider handling any dependencies that might exist with other resources (e.g., if the category is associated with expenses).
+- **Access Control**: Verify that the user has permission to delete the specified category.
 
 ## Expenses
 
-<h5>Create a Single Expense</h5>
-<p>
-  <em>Endpoint</em>:POST /api/v1/expenses/</br>
-  <em>Query Parameters</em> </br>
-    <code>
-      {
-        "category_id": "8c135496-ea27-446b-919e-b312394c5f36",
-        "amount": 123.45,
-        "date": "2024-11-14T00:00:00Z",
-        "description": "Toyota Camry Car Insurance"
-        "receipt_id": "your-receipt-uuid-here" // optional but can be linked to an already uploaded receipt.
-      }
-    </code>
-<br>
-<em>Response</em>: </br>
-<code>
-    {
-      "status": 200,
-      "message": "Expense created successfully",
-      "data": {
-        "expense_id": "b0b87e74-b3aa-481d-a91e-d240cac56e0a",
-        "user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
-        "category_id": "8c135496-ea27-446b-919e-b312394c5f36",
-        "amount": 123.45,
-        "date": "2024-11-14T00:00:00Z",
-        "description": "Toyota Camry Car Insurance",
-        "receipt_id": null,
-        "created_at": "2024-11-14T18:00:22.735473-05:00",
-        "updated_at": "2024-11-14T18:00:22.735473-05:00"
-      }
-    }
+### Create a Single Expense
 
-<hr>
+- **Endpoint**: `POST /api/v1/expenses/`
+- **Description**: This endpoint allows users to create a new expense entry. The expense is associated with a category, includes a specific amount, date, and description, and can optionally be linked to a receipt.
 
-    {
-      "error": "Category name already exists"
-    }
+- **Request Body**:
 
-  </code>
-</p>
+  - `category_id` (required): The unique identifier of the category the expense belongs to.
+  - `amount` (required): The amount of the expense.
+  - `date` (required): The date when the expense occurred in ISO 8601 format (e.g., `2024-11-14T00:00:00Z`).
+  - `description` (required): A brief description of the expense.
+  - `receipt_id` (optional): The unique identifier for a receipt, if the expense is associated with an uploaded receipt.
 
-## Auth User All Expenses
+  **Example Request Body**:
 
-### Endpoint
+  ```json
+  {
+  	"category_id": "8c135496-ea27-446b-919e-b312394c5f36",
+  	"amount": 123.45,
+  	"date": "2024-11-14T00:00:00Z",
+  	"description": "Toyota Camry Car Insurance",
+  	"receipt_id": "your-receipt-uuid-here" // Optional
+  }
+  ```
 
-`GET /api/v1/expenses/`
+- **Response**:
+
+  #### Success
+
+  ```json
+  {
+  	"status": 200,
+  	"message": "Expense created successfully",
+  	"data": {
+  		"expense_id": "b0b87e74-b3aa-481d-a91e-d240cac56e0a",
+  		"user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
+  		"category_id": "8c135496-ea27-446b-919e-b312394c5f36",
+  		"amount": 123.45,
+  		"date": "2024-11-14T00:00:00Z",
+  		"description": "Toyota Camry Car Insurance",
+  		"receipt_id": null,
+  		"created_at": "2024-11-14T18:00:22.735473-05:00",
+  		"updated_at": "2024-11-14T18:00:22.735473-05:00"
+  	}
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"error": "Category not found" // Example error message if the category_id doesn't exist
+  }
+  ```
+
+### Recommendations:
+
+- **Category Validation**: Ensure that the `category_id` exists in the system. If it does not, return a `400` error indicating that the category is invalid.
+- **Amount Validation**: Ensure that the `amount` is a positive number. If it is zero or negative, return a `400` error.
+- **Date Validation**: Ensure that the `date` is in the correct format (`YYYY-MM-DD`), and it’s not a future date unless necessary.
+- **Description**: Make sure that the `description` is meaningful and within acceptable length limits (e.g., no more than 255 characters).
+- **Optional Fields**: If the `receipt_id` is provided, validate that it exists and is a valid reference to a receipt in the system.
+
+### List All Expenses
+
+- **Endpoint**: `GET /api/v1/expenses/`
+- **Description**: This endpoint allows users to retrieve a list of all expenses associated with their account. It supports pagination and filtering by date range, category, amount, and sorting by date.
 
 ### Query Parameters
 
-| Parameter     | Type     | Description                                  | Default | Options/Format             |
-| ------------- | -------- | -------------------------------------------- | ------- | -------------------------- |
-| `page`        | [int]    | The page number for pagination               | `1`     | N/A                        |
-| `limit`       | [int]    | The number of items per page                 | `10`    | N/A                        |
-| `start_date`  | [string] | The start date for filtering expenses        | N/A     | Format: `YYYY-MM-DD`       |
-| `end_date`    | [string] | The end date for filtering expenses          | N/A     | Format: `YYYY-MM-DD`       |
-| `category_id` | [string] | The ID of the category to filter expenses by | N/A     | N/A                        |
-| `min_amount`  | [float]  | The minimum amount to filter the expenses by | N/A     | N/A                        |
-| `max_amount`  | [float]  | The maximum amount to filter the expenses by | N/A     | N/A                        |
-| `sort`        | [string] | The field by which to sort the results       | `date`  | N/A                        |
-| `order`       | [string] | The order of sorting                         | `asc`   | Options: `"asc"`, `"desc"` |
+| Parameter     | Type     | Description                                    | Default | Options/Format             |
+| ------------- | -------- | ---------------------------------------------- | ------- | -------------------------- |
+| `page`        | [int]    | The page number for pagination                 | `1`     | N/A                        |
+| `limit`       | [int]    | The number of items per page                   | `10`    | N/A                        |
+| `start_date`  | [string] | The start date for filtering expenses          | N/A     | Format: `YYYY-MM-DD`       |
+| `end_date`    | [string] | The end date for filtering expenses            | N/A     | Format: `YYYY-MM-DD`       |
+| `category_id` | [string] | The ID of the category to filter expenses by   | N/A     | N/A                        |
+| `min_amount`  | [float]  | The minimum amount to filter the expenses by   | N/A     | N/A                        |
+| `max_amount`  | [float]  | The maximum amount to filter the expenses by   | N/A     | N/A                        |
+| `sort`        | [string] | The field by which to sort the results         | `date`  | `date`                     |
+| `order`       | [string] | The order of sorting (ascending or descending) | `asc`   | Options: `"asc"`, `"desc"` |
 
 ### Notes:
 
-- By default, the `page` is set to `1`, and `limit` is set to `10` if not specified.
-- Date filters must follow the format `YYYY-MM-DD`.
-- Sorting can be done by `date` (default), and the sorting order can be either `asc` or `desc`.
+- **Pagination**: If no `page` or `limit` is specified, defaults are set to `page=1` and `limit=10`.
+- **Date Filters**: The `start_date` and `end_date` parameters must follow the format `YYYY-MM-DD`.
+- **Sorting**: The `sort` field defaults to `date`. Sorting order (`asc` or `desc`) can be specified using the `order` parameter.
 
-  </br>
-  <em>Response</em>: </br>
-  <code>
+### Example Request:
+
+```http
+GET /api/v1/expenses/?page=1&limit=10&start_date=2024-11-01&end_date=2024-11-30&category_id=8c135496-ea27-446b-919e-b312394c5f36&min_amount=50&max_amount=500&sort=date&order=desc
+```
+
+- **Response**:
+
+  #### Success
+
+  ```json
   {
-    "status": 200,
-    "message": "Expenses fetched successfully",
-    "data": {
-        "expenses": [
-            {
-                "expense_id": "b0b87e74-b3aa-481d-a91e-d240cac56e0a",
-                "user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
-                "category_id": "8c135496-ea27-446b-919e-b312394c5f36",
-                "amount": 123.45,
-                "date": "2024-11-13T19:00:00-05:00",
-                "description": "Toyota Camry Car Insurance",
-                "receipt_id": null,
-                "created_at": "2024-11-14T18:00:22.735473-05:00",
-                "updated_at": "2024-11-14T18:00:22.735473-05:00"
-            },
-            {
-                "expense_id": "52924f2a-f67c-4fa9-889a-60afa1518f3b",
-                "user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
-                "category_id": "8c135496-ea27-446b-919e-b312394c5f36",
-                "amount": 123.45,
-                "date": "2024-11-13T19:00:00-05:00",
-                "description": "Lamborghini",
-                "receipt_id": null,
-                "created_at": "2024-11-14T19:38:21.557713-05:00",
-                "updated_at": "2024-11-14T19:38:21.557713-05:00"
-            },
-        ],
-        "pagination": {
-            "total_count": 3,
-            "page": 1,
-            "per_page": 10,
-            "total_pages": 1
-        }
-    },
-    "errors": null
+  	"status": 200,
+  	"message": "Expenses fetched successfully",
+  	"data": {
+  		"expenses": [
+  			{
+  				"expense_id": "b0b87e74-b3aa-481d-a91e-d240cac56e0a",
+  				"user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
+  				"category_id": "8c135496-ea27-446b-919e-b312394c5f36",
+  				"amount": 123.45,
+  				"date": "2024-11-13T19:00:00-05:00",
+  				"description": "Toyota Camry Car Insurance",
+  				"receipt_id": null,
+  				"created_at": "2024-11-14T18:00:22.735473-05:00",
+  				"updated_at": "2024-11-14T18:00:22.735473-05:00"
+  			},
+  			{
+  				"expense_id": "52924f2a-f67c-4fa9-889a-60afa1518f3b",
+  				"user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
+  				"category_id": "8c135496-ea27-446b-919e-b312394c5f36",
+  				"amount": 123.45,
+  				"date": "2024-11-13T19:00:00-05:00",
+  				"description": "Lamborghini",
+  				"receipt_id": null,
+  				"created_at": "2024-11-14T19:38:21.557713-05:00",
+  				"updated_at": "2024-11-14T19:38:21.557713-05:00"
+  			}
+  		],
+  		"pagination": {
+  			"total_count": 3,
+  			"page": 1,
+  			"per_page": 10,
+  			"total_pages": 1
+  		}
+  	},
+  	"errors": null
   }
+  ```
 
-<hr>
+  #### Error
 
-    {
-      "error": "Category name already exists"
-    }
-
-  </code>
-</p>
-
-## Listing expenses (GET /api/v1/expenses)
-
-<h5>Get Single Expense</h5>
-<p>
-  <em>Endpoint</em>:GET /api/v1/expenses/{expenseId} </br>
-  <em>Query Parameters</em>:None </br>
-  <em>Response</em>: </br>
-  <code>
+  ```json
   {
-    "status": 200,
-    "message": "Expense fetched successfully",
-    "data": {
-        "expense_id": "b0b87e74-b3aa-481d-a91e-d240cac56e0a",
-        "user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
-        "category_id": "8c135496-ea27-446b-919e-b312394c5f36",
-        "amount": 123.45,
-        "date": "2024-11-13T19:00:00-05:00",
-        "description": "Toyota Camry Car Insurance",
-        "receipt_id": null,
-        "created_at": "2024-11-14T18:00:22.735473-05:00",
-        "updated_at": "2024-11-14T18:00:22.735473-05:00"
-    }
+  	"error": "Category not found" // Example error message if the category_id does not exist
   }
-  </br>
-    {
-      "status": 404,
-      "message": "Expense not found"
-    }
-  </code>
-</p>
+  ```
 
-<h5>Delete Single Expense</h5>
-<p>
-  <em>Endpoint</em>:DELETE /api/v1/expenses/{expenseId} </br>
-  <em>Query Parameters</em>:None </br>
-  <em>Response</em>: </br>
-  <code>
+### Recommendations:
+
+- **Pagination**: Always use the `page` and `limit` parameters to prevent retrieving a large set of data. Ensure that pagination is handled correctly in the response.
+- **Date Range**: Ensure the `start_date` and `end_date` parameters follow the correct format (`YYYY-MM-DD`).
+- **Sorting**: Validate the `sort` and `order` parameters to ensure they are set correctly (e.g., `sort` should default to `date`, and `order` should be either `asc` or `desc`).
+- **Category Validation**: If the `category_id` is provided, ensure that it exists in the system. If not, return a `404` error indicating that the category was not found.
+- **Amount Filters**: Validate the `min_amount` and `max_amount` filters to ensure they are numeric values.
+
+### Get Single Expense
+
+- **Endpoint**: `GET /api/v1/expenses/{expenseId}`
+- **Description**: This endpoint allows users to retrieve the details of a single expense by its unique `expenseId`.
+
+### Query Parameters
+
+None.
+
+### Path Parameters
+
+| Parameter   | Type   | Description                              | Options/Format |
+| ----------- | ------ | ---------------------------------------- | -------------- |
+| `expenseId` | string | The unique ID of the expense to retrieve | UUID format    |
+
+- **Response**:
+
+  #### Success
+
+  ```json
   {
-    "status": 200,
-    "message": "Expense deleted successfully"
+  	"status": 200,
+  	"message": "Expense fetched successfully",
+  	"data": {
+  		"expense_id": "b0b87e74-b3aa-481d-a91e-d240cac56e0a",
+  		"user_id": "f3486758-899e-462c-98b7-ba8f691c8718",
+  		"category_id": "8c135496-ea27-446b-919e-b312394c5f36",
+  		"amount": 123.45,
+  		"date": "2024-11-13T19:00:00-05:00",
+  		"description": "Toyota Camry Car Insurance",
+  		"receipt_id": null,
+  		"created_at": "2024-11-14T18:00:22.735473-05:00",
+  		"updated_at": "2024-11-14T18:00:22.735473-05:00"
+  	}
   }
-  </br>
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": 404,
+  	"message": "Expense not found"
+  }
+  ```
+
+### Recommendations:
+
+- **Valid expenseId**: Ensure that the `expenseId` passed in the URL is a valid UUID. If an invalid or non-existing `expenseId` is provided, return a `404` error with the message `"Expense not found"`.
+- **Error Handling**: The `404` error should be returned if the `expenseId` does not exist in the system. You may also consider handling other types of errors (e.g., unauthorized access).
+- **Access Control**: Make sure that the user can only access their own expenses. You can validate the `user_id` and ensure it matches the authenticated user's ID.
+
+  <h5>Delete Single Expense</h5>
+  <p>
+    <em>Endpoint</em>:DELETE /api/v1/expenses/{expenseId} </br>
+    <em>Query Parameters</em>:None </br>
+    <em>Response</em>: </br>
+    <code>
     {
-      "status": 404,
-      "message": "Expense not found"
+      "status": 200,
+      "message": "Expense deleted successfully"
     }
-  </code>
-</p>
+    </br>
+      {
+        "status": 404,
+        "message": "Expense not found"
+      }
+    </code>
+  </p>
 
 <h5>Update Single Expense</h5>
 <p>
@@ -630,6 +761,10 @@ JWT_EXPIRATION_HOURS=24
 ## Contributions
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+```
+
+```
 
 ```
 
