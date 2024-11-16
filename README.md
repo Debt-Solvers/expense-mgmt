@@ -91,31 +91,29 @@ docker run -p 8081:8081 expense-service
 
 ### Get Default Categories
 
-<p>
-  <em>Endpoint</em>:GET /api/v1/categories/defaults </br>
-  <em>Query Parameters</em>:None </br>
-  <em>Response</em>: </br>
-  <code>
-    {
-    "status": 200,
-    "message": "Fetched default categories successfully",
-    "data": {
-        "categories": [
-            {
-              "category_id": "74e21b0b-8ad8-49a1-8a01-7e74e250e713",
-              "name": "Food & Dining",
-              "description": "Restaurants, groceries, and food delivery",
-              "color_code": "#FFD700",
-              "is_default": true,
-              "created_at": "2024-11-12T19:06:54.155524-05:00",
-              "updated_at": "2024-11-12T19:06:54.155524-05:00",
-              "deleted_at": null
-            }
-        ]
-      }
-    }
-  </code>
-</p>
+Endpoint:GET /api/v1/categories/defaults
+Query Parameters:None
+Response
+<code>
+{
+"status": 200,
+"message": "Fetched default categories successfully",
+"data": {
+"categories": [
+{
+"category_id": "74e21b0b-8ad8-49a1-8a01-7e74e250e713",
+"name": "Food & Dining",
+"description": "Restaurants, groceries, and food delivery",
+"color_code": "#FFD700",
+"is_default": true,
+"created_at": "2024-11-12T19:06:54.155524-05:00",
+"updated_at": "2024-11-12T19:06:54.155524-05:00",
+"deleted_at": null
+}
+]
+}
+}
+</code>
 
 <h5>Auth User All Categories</h5>
 <p>
