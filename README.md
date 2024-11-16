@@ -808,19 +808,3 @@ JWT_EXPIRATION_HOURS=24
 ## Contributions
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
