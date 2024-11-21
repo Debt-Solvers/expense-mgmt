@@ -950,17 +950,68 @@ This endpoint allows users to delete a specific budget.
   }
   ```
 
-  <p>
-    Budget Analysis (GET /api/v1/budgets/analysis)
-    Request:
-    Method: GET
-    URL: /api/v1/budgets/analysis
-    Query Parameters:
-    category_id: d951a6bc-b346-4131-b294-fe7b33edcd59 (optional)
-    start_date: 2024-12-01 (optional)
-    end_date: 2024-12-31 (optional)
+### Budget Analysis
 
-  </p>
+This endpoint allows users to fetch an analysis of budgets, including details on spending and budget status for different categories.
+
+- **Endpoint**: `GET /api/v1/budgets/analysis`
+
+- **Query Parameters** (Optional):
+
+  - **`category_id`**: (string, optional) The ID of the category to filter the analysis. If not provided, all categories are included.
+  - **`start_date`**: (string, optional) The start date for the analysis period in the format `YYYY-MM-DD`.
+  - **`end_date`**: (string, optional) The end date for the analysis period in the format `YYYY-MM-DD`.
+
+- **Example Request**:
+
+  ```http
+  GET /api/v1/budgets/analysis?category_id=09880493-bf02-4d5a-87df-e515d0c39dc1&start_date=2024-11-01&end_date=2024-11-30
+  ```
+
+- **Response**
+
+  #### Success
+
+  ```json
+  {
+  	"status": 200,
+  	"message": "Budget analysis fetched successfully",
+  	"data": [
+  		{
+  			"category_id": "09880493-bf02-4d5a-87df-e515d0c39dc1",
+  			"category": "Groceries",
+  			"budgeted_amount": 500.0,
+  			"total_spent": 650.25,
+  			"remaining_budget": -150.25,
+  			"percentage_spent": 130.05,
+  			"exceeds_budget": true
+  		},
+  		{
+  			"category_id": "e3d5f0ba-4623-11ec-81d3-0242ac130003",
+  			"category": "Transport",
+  			"budgeted_amount": 200.0,
+  			"total_spent": 180.0,
+  			"remaining_budget": 20.0,
+  			"percentage_spent": 90.0,
+  			"exceeds_budget": false
+  		}
+  	],
+  	"errors": null
+  }
+  ```
+
+  #### Error
+
+  ```json
+  {
+  	"status": 400,
+  	"message": "Invalid date range provided",
+  	"errors": {
+  		"start_date": "Must be a valid date in YYYY-MM-DD format",
+  		"end_date": "Must be a valid date in YYYY-MM-DD format"
+  	}
+  }
+  ```
 
 ### Receipts
 
@@ -971,11 +1022,3 @@ This endpoint allows users to delete a specific budget.
 ## Contributions
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
-
-```
-
-```
-
-```
-
-```

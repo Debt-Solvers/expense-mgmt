@@ -394,12 +394,24 @@ func BudgetAnalysis(c *gin.Context) {
 		exceeds := totalSpent > budget.Amount
 
 		// Fetch category name (use "Unknown" if unavailable)
-		categoryName := "Unknown"
-		var category models.Category
-		if err := db.GetDBInstance().Select("name").Where("category_id = ?", budget.CategoryID).First(&category).Error; err == nil {
-			categoryName = category.Name
-		}
+		categoryName := "Unknown" // Default to Unknown in case of errors
 
+		var category struct {
+      Name string
+    }
+ 
+    err := db.GetDBInstance().
+        Table("categories").
+        Select("name").
+        Where("id = ?", budget.CategoryID).
+        Scan(&category).Error
+    if err != nil {
+      // Log the error for debugging, but don't fail the entire process
+      fmt.Printf("Failed to fetch category name for category_id: %s, Error: %v\n", budget.CategoryID, err)
+    }else {
+      categoryName = category.Name // Assign the fetched name
+    }
+	
 		analysisResults = append(analysisResults, AnalysisResult{
 			CategoryID:   budget.CategoryID,
 			Category:     categoryName,
