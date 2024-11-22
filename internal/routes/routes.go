@@ -17,6 +17,8 @@ func CategoryRoutes(router *gin.Engine) {
 		categoryGroup.GET("/:categoryId", controller.GetCategoryDetails)
 		categoryGroup.PUT("/:categoryId", controller.UpdateCategory)
 		categoryGroup.DELETE("/:categoryId", controller.DeleteCategory)
+		// categoryGroup.GET("/:categoryId/summary", controller.GetCategorySummary)
+		// categoryGroup.GET("/:categoryId/budget", controller.GetCategoryBudgetStatus)
 	}
 }
 
@@ -37,11 +39,11 @@ func BudgetRoutes(router *gin.Engine) {
 	budgetGroup := router.Group("/api/v1/budgets")
 	budgetGroup.Use(middleware.AuthMiddleware())
 	{
-		budgetGroup.POST("/", controller.CreateBudget)   
-		budgetGroup.GET("/", controller.ListBudgets)      
-		budgetGroup.GET("/:budgetId", controller.GetSingleBudget) 
-		budgetGroup.PUT("/:budgetId", controller.UpdateBudget)   
-		budgetGroup.DELETE("/:budgetId", controller.DeleteBudget)
+		budgetGroup.POST("/", controller.CreateBudget)     // Create a new budget
+		budgetGroup.GET("/", controller.ListBudgets)       // List all budgets
+		budgetGroup.GET("/:budgetId", controller.GetSingleBudget)  // Get a single budget
+		budgetGroup.PUT("/:budgetId", controller.UpdateBudget)     // Update a budget
+		budgetGroup.DELETE("/:budgetId", controller.DeleteBudget)  // Delete a budget
 		budgetGroup.GET("/analysis", controller.BudgetAnalysis)
 	}
 }
