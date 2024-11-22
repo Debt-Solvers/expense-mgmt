@@ -19,7 +19,7 @@ func CreateBudget(c *gin.Context) {
 	// Get user_id from context
 	userID, ok := c.Get("userId")
 	if !ok {
-		utils.SendResponse(c, http.StatusUnauthorized, "User ID not found", nil, nil)
+		utils.SendResponse(c, http.StatusUnauthorized, "Unauthorized: User ID not found", nil, nil)
 		return
 	}
 
@@ -33,20 +33,20 @@ func CreateBudget(c *gin.Context) {
 
 	var input BudgetInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		utils.SendResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid input: %v", err), nil, nil)
+		utils.SendResponse(c, http.StatusBadRequest, "Invalid input data", nil, err.Error())
 		return
 	}
 
 	// Parse dates and validate their format
 	startDate, err := time.Parse("2006-01-02", input.StartDate)
 	if err != nil {
-		utils.SendResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid start_date format (expected YYYY-MM-DD): %v", err), nil, nil)
+		utils.SendResponse(c, http.StatusBadRequest, "Invalid start_date format (expected YYYY-MM-DD)", nil, err.Error())
 		return
 	}
 
 	endDate, err := time.Parse("2006-01-02", input.EndDate)
 	if err != nil {
-		utils.SendResponse(c, http.StatusBadRequest, fmt.Sprintf("Invalid end_date format (expected YYYY-MM-DD): %v", err), nil, nil)
+		utils.SendResponse(c, http.StatusBadRequest, "Invalid end_date format (expected YYYY-MM-DD)", nil, err.Error())
 		return
 	}
 
@@ -56,6 +56,23 @@ func CreateBudget(c *gin.Context) {
 		return
 	}
 
+	// Pre-check for valid category_id
+	// var categoryExists bool
+	// err = db.GetDBInstance().Model(&models.Category{}).
+	// 	Where("id = ? AND user_id = ?", input.CategoryID, userID).
+	// 	Select("COUNT(1) > 0").
+	// 	Scan(&categoryExists).Error
+
+	// if err != nil {
+	// 	utils.SendResponse(c, http.StatusInternalServerError, "Database error while verifying category_id", nil, err.Error())
+	// 	return
+	// }
+
+	// if !categoryExists {
+	// 	utils.SendResponse(c, http.StatusBadRequest, "Invalid category_id: Category does not exist or is not associated with the user", nil, nil)
+	// 	return
+	// }
+
 	// Ensure the budget does not overlap with existing budgets for the same category
 	var overlappingBudgetExists bool
 	err = db.GetDBInstance().Model(&models.Budget{}).
@@ -63,12 +80,12 @@ func CreateBudget(c *gin.Context) {
 		Select("COUNT(1) > 0").
 		Scan(&overlappingBudgetExists).Error
 	if err != nil {
-		utils.SendResponse(c, http.StatusInternalServerError, "Failed to check for overlapping budgets", nil, nil)
+		utils.SendResponse(c, http.StatusInternalServerError, "Database error while checking overlapping budgets", nil, err.Error())
 		return
 	}
 
 	if overlappingBudgetExists {
-		utils.SendResponse(c, http.StatusBadRequest, "Budget period overlaps with an existing budget for the same category", nil, nil)
+		utils.SendResponse(c, http.StatusConflict, "Budget period overlaps with an existing budget for the same category", nil, nil)
 		return
 	}
 
@@ -83,7 +100,7 @@ func CreateBudget(c *gin.Context) {
 
 	// Save the budget to the database
 	if err := db.GetDBInstance().Create(&newBudget).Error; err != nil {
-		utils.SendResponse(c, http.StatusInternalServerError, "Failed to create budget", nil, nil)
+		utils.SendResponse(c, http.StatusInternalServerError, "Failed to create budget", nil, err.Error())
 		return
 	}
 
