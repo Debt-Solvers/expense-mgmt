@@ -57,21 +57,21 @@ func CreateBudget(c *gin.Context) {
 	}
 
 	// Pre-check for valid category_id
-	// var categoryExists bool
-	// err = db.GetDBInstance().Model(&models.Category{}).
-	// 	Where("id = ? AND user_id = ?", input.CategoryID, userID).
-	// 	Select("COUNT(1) > 0").
-	// 	Scan(&categoryExists).Error
+	var categoryExists bool
+	err = db.GetDBInstance().Model(&models.Category{}).
+		Where("id = ?", input.CategoryID).
+		Select("COUNT(1) > 0").
+		Scan(&categoryExists).Error
 
-	// if err != nil {
-	// 	utils.SendResponse(c, http.StatusInternalServerError, "Database error while verifying category_id", nil, err.Error())
-	// 	return
-	// }
+	if err != nil {
+		utils.SendResponse(c, http.StatusInternalServerError, "Database error while verifying category_id", nil, err.Error())
+		return
+	}
 
-	// if !categoryExists {
-	// 	utils.SendResponse(c, http.StatusBadRequest, "Invalid category_id: Category does not exist or is not associated with the user", nil, nil)
-	// 	return
-	// }
+	if !categoryExists {
+		utils.SendResponse(c, http.StatusBadRequest, "Invalid category_id: Category does not exist or is not associated with the user", nil, nil)
+		return
+	}
 
 	// Ensure the budget does not overlap with existing budgets for the same category
 	var overlappingBudgetExists bool
