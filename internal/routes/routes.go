@@ -3,9 +3,16 @@ package routes
 import (
 	"expense-mgmt/internal/controller"
 	"expense-mgmt/internal/middleware"
+	test "expense-mgmt/internal/tests"
 
 	"github.com/gin-gonic/gin"
 )
+
+// Add the health check route to your main router
+func AddHealthCheckRoute(router *gin.Engine) {
+	router.GET("/health", test.HealthCheck)
+}
+
 
 func CategoryRoutes(router *gin.Engine) {
 	categoryGroup := router.Group("/api/v1/categories")

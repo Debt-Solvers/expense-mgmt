@@ -27,6 +27,7 @@ func main() {
 	routes.CategoryRoutes(server) // Public routes
   routes.ExpenseRoutes(server)
   routes.BudgetRoutes(server)
+	routes.AddHealthCheckRoute(server)
 	// Check for environment variable port
 	port := os.Getenv("PORT")
 	if port == "" {
