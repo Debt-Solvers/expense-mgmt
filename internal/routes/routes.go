@@ -31,7 +31,7 @@ func ExpenseRoutes(router *gin.Engine) {
 		expenseGroup.GET("/:expenseId", controller.GetExpense)
 		expenseGroup.DELETE("/:expenseId", controller.DeleteExpense)
 		expenseGroup.PUT("/:expenseId", controller.UpdateExpense)
-		expenseGroup.GET("/expenses/analysis", controller.ExpenseAnalysis)
+		expenseGroup.GET("/analysis", controller.ExpenseAnalysis)
 	}
 }
 
@@ -44,6 +44,6 @@ func BudgetRoutes(router *gin.Engine) {
 		budgetGroup.GET("/:budgetId", controller.GetSingleBudget)  // Get a single budget
 		budgetGroup.PUT("/:budgetId", controller.UpdateBudget)     // Update a budget
 		budgetGroup.DELETE("/:budgetId", controller.DeleteBudget)  // Delete a budget
-		budgetGroup.GET("/budget/analysis", controller.BudgetAnalysis)
+		budgetGroup.GET("/analysis", controller.BudgetAnalysis)
 	}
 }
