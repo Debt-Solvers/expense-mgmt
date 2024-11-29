@@ -13,7 +13,6 @@ func AddHealthCheckRoute(router *gin.Engine) {
 	router.GET("/health", test.HealthCheck)
 }
 
-
 func CategoryRoutes(router *gin.Engine) {
 	categoryGroup := router.Group("/api/v1/categories")
 	categoryGroup.Use(middleware.AuthMiddleware())

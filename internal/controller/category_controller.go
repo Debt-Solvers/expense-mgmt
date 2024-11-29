@@ -302,25 +302,3 @@ func DeleteCategory(c *gin.Context) {
 	utils.SendResponse(c, http.StatusOK, "Category deleted successfully", nil, nil)
 }
 
-
-// // GetCategorySummary returns usage summary for a specific category.
-// func GetCategorySummary(c *gin.Context) {
-// 	categoryId := c.Param("categoryId")
-// 	summary, err := models.GetCategoryUsageSummary(categoryId)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch category summary"})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{"summary": summary})
-// }
-
-// // GetCategoryBudgetStatus returns budget status for a specific category.
-// func GetCategoryBudgetStatus(c *gin.Context) {
-// 	categoryId := c.Param("categoryId")
-// 	budgetStatus, err := models.GetCategoryBudgetStatus(categoryId)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch budget status"})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{"budgetStatus": budgetStatus})
-// }
