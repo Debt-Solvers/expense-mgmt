@@ -30,3 +30,4 @@ type ExpenseAnalysisResult struct {
 	HighestExpense    float64            `json:"highest_expense,omitempty"`
 	RecurringTotal    float64            `json:"recurring_total,omitempty"`
 }
+
